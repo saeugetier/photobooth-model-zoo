@@ -8,6 +8,8 @@ on:
 jobs:
   build-models:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # wichtig für Release-Upload!
 
     steps:
       - name: Checkout
@@ -41,10 +43,11 @@ jobs:
           mv *.onnx *model export/
           cp models/coco.names export/
           tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
+          echo "MODEL_FILE=yolo-models-${GITHUB_REF_NAME}.tar.gz" >> $GITHUB_ENV
 
       - name: Create GitHub Release and upload models
         uses: softprops/action-gh-release@v1
         with:
-          files: yolo-models-${GITHUB_REF_NAME}.tar.gz
+          files: ${{ env.MODEL_FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
