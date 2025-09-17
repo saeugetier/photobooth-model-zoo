@@ -42,7 +42,9 @@ jobs:
           mkdir export
           mv *.onnx *model export/
           cp models/coco.names export/
-          tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
+          cd export
+          tar -czf ../yolo-models-${GITHUB_REF_NAME}.tar.gz *
+          cd ..
           echo "MODEL_FILE=yolo-models-${GITHUB_REF_NAME}.tar.gz" >> $GITHUB_ENV
 
       - name: Create GitHub Release and upload models
