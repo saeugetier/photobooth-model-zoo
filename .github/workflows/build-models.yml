@@ -1,0 +1,50 @@
+name: Build and Release YOLO Models
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-models:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv yolo-venv
+          . yolo-venv/bin/activate
+          pip install --upgrade pip
+          pip install numpy==1.26.4
+          pip install torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2
+
+      - name: Export YOLO models (ONNX + NCNN)
+        run: |
+          . yolo-venv/bin/activate
+          yolo export model=yolo11n-seg.pt format=onnx
+          yolo export model=yolo11x-seg.pt format=onnx
+          yolo export model=yolo11n-seg.pt format=ncnn
+          yolo export model=yolo11x-seg.pt format=ncnn
+
+      - name: Prepare model bundle
+        run: |
+          mkdir export
+          mv *.onnx *model export/
+          cp models/coco.names export/
+          tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
+
+      - name: Create GitHub Release and upload models
+        uses: softprops/action-gh-release@v1
+        with:
+          files: yolo-models-${GITHUB_REF_NAME}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
