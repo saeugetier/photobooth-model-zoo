@@ -34,6 +34,8 @@ jobs:
           . yolo-venv/bin/activate
           yolo export model=yolo11n-seg.pt format=onnx
           yolo export model=yolo11x-seg.pt format=onnx
+          yolo export model=yolo11n-seg.pt format=ncnn imgsz=320  
+          mv yolo11n-seg_ncnn_model yolo11n-seg_ncnn_model_320
           yolo export model=yolo11n-seg.pt format=ncnn
           yolo export model=yolo11x-seg.pt format=ncnn
 
@@ -42,9 +44,7 @@ jobs:
           mkdir export
           mv *.onnx *model export/
           cp models/coco.names export/
-          cd export
-          tar -czf ../yolo-models-${GITHUB_REF_NAME}.tar.gz *
-          cd ..
+          tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
           echo "MODEL_FILE=yolo-models-${GITHUB_REF_NAME}.tar.gz" >> $GITHUB_ENV
 
       - name: Create GitHub Release and upload models
