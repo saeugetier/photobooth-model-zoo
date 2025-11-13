@@ -43,7 +43,7 @@ jobs:
       - name: Prepare model bundle
         run: |
           mkdir export
-          mv *.onnx *model export/
+          mv *.onnx *model *model_320 export/
           cp models/coco.names export/
           tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
           echo "MODEL_FILE=yolo-models-${GITHUB_REF_NAME}.tar.gz" >> $GITHUB_ENV
