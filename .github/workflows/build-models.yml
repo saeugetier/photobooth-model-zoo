@@ -35,7 +35,8 @@ jobs:
           yolo export model=yolo11n-seg.pt format=onnx
           yolo export model=yolo11x-seg.pt format=onnx
           yolo export model=yolo11n-seg.pt format=ncnn imgsz=320  
-          mv yolo11n-seg_ncnn_model yolo11n-seg_ncnn_model_320
+          mkdir yolo11n-seg_ncnn_model_320
+          mv yolo11n-seg_ncnn_model/* yolo11n-seg_ncnn_model_320
           yolo export model=yolo11n-seg.pt format=ncnn
           yolo export model=yolo11x-seg.pt format=ncnn
 
