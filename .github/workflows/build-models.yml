@@ -29,7 +29,7 @@ jobs:
           pip install torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2
 
-      - name: Export YOLO models (ONNX + NCNN)
+      - name: Export YOLO models (ONNX + NCNN + RKNN)
         run: |
           . yolo-venv/bin/activate
           yolo export model=yolo11n-seg.pt format=onnx
@@ -39,6 +39,8 @@ jobs:
           mv yolo11n-seg_ncnn_model/* yolo11n-seg_ncnn_model_320
           yolo export model=yolo11n-seg.pt format=ncnn
           yolo export model=yolo11x-seg.pt format=ncnn
+          yolo export model=yolo11n-seg.pt format=rknn name=rk3566
+          yolo export model=yolo11x-seg.pt format=rknn name=rk3566
 
       - name: Prepare model bundle
         run: |
