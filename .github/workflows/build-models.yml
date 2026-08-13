@@ -39,7 +39,7 @@ jobs:
           mv yolo11n-seg_ncnn_model/* yolo11n-seg_ncnn_model_320
           yolo export model=yolo11n-seg.pt format=ncnn
           yolo export model=yolo11x-seg.pt format=ncnn
-          yolo export model=yolo11n-seg.pt format=rknn name=rk3566
+          yolo export model=yolo11n-seg.pt format=rknn name=rk3566 quantize=8 imgsz=320 data=dota8.yaml
           yolo export model=yolo11x-seg.pt format=rknn name=rk3566
 
       - name: Prepare model bundle
