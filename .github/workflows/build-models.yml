@@ -34,6 +34,9 @@ jobs:
           . yolo-venv/bin/activate
           yolo export model=yolo11n-seg.pt format=onnx
           yolo export model=yolo11x-seg.pt format=onnx
+          # Keep original ONNX exports, RKNN export triggers another ONNX pass.
+          mv yolo11n-seg.onnx yolo11n-seg_onnx.onnx
+          mv yolo11x-seg.onnx yolo11x-seg_onnx.onnx
           yolo export model=yolo11n-seg.pt format=ncnn imgsz=320  
           mkdir yolo11n-seg_ncnn_model_320
           mv yolo11n-seg_ncnn_model/* yolo11n-seg_ncnn_model_320
@@ -44,15 +47,20 @@ jobs:
 
       - name: Prepare model bundle
         run: |
-          mkdir export
-          mv *.onnx *model *model_320 export/
+          mkdir -p export
+          cp yolo11n-seg_onnx.onnx export/
+          cp yolo11x-seg_onnx.onnx export/
+          cp -r yolo11n-seg_ncnn_model export/
+          cp -r yolo11n-seg_ncnn_model_320 export/
+          cp -r yolo11x-seg_ncnn_model export/
+          cp -r yolo11n-seg_rknn_model export/
+          cp -r yolo11x-seg_rknn_model export/
           cp models/coco.names export/
           tar -czf yolo-models-${GITHUB_REF_NAME}.tar.gz -C export .
-          echo "MODEL_FILE=yolo-models-${GITHUB_REF_NAME}.tar.gz" >> $GITHUB_ENV
 
       - name: Create GitHub Release and upload models
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ env.MODEL_FILE }}
+          files: yolo-models-${{ github.ref_name }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
